@@ -37,10 +37,13 @@ Vue.component('product', {
               >
             Add to cart
             </button>
-  
-            <div class="cart">
-              <p>Cart({{ cart }})</p>
-            </div>
+
+            <button v-on:click="removeFromCart" 
+              :disabled="!inStock"
+              :class="{ disabledButton: !inStock }"
+              >
+            Remove from cart
+            </button>
   
          </div>  
       
@@ -56,26 +59,28 @@ Vue.component('product', {
             {
               variantId: 2234,
               variantColor: 'green',
-              variantImage:  'https://www.vuemastery.com/images/challenges/vmSocks-green-onWhite.jpg',
+              variantImage:  "./assets/vmSocks-green-onWhite.jpg",
               variantQuantity: 10     
             },
             {
               variantId: 2235,
               variantColor: 'blue',
-              variantImage: 'https://www.vuemastery.com/images/challenges/vmSocks-blue-onWhite.jpg',
+              variantImage: "./assets/vmSocks-blue-onWhite.jpg",
               variantQuantity: 0     
             }
           ],
-          cart: 0
       }
     },
       methods: {
         addToCart: function() {
-            this.cart += 1
+            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
         },
         updateProduct: function(index) {  
             this.selectedVariant = index
-        }
+        },
+        removeFromCart: function() {
+            this.$emit('remove-from-cart', this.variants[this.selectedVariant].variantId);
+        },
       },
       computed: {
           title() {
@@ -99,6 +104,19 @@ Vue.component('product', {
   var app = new Vue({
       el: '#app',
       data: {
-        premium: true
+        premium: true,
+        cart: []
+      },
+      methods: {
+        updateCart(id) {
+            this.cart.push(id);
+        },
+        removeCart(id) {
+            for(var i = this.cart.length - 1; i >= 0; i--) {
+                if (this.cart[i] === id) {
+                   this.cart.splice(i, 1);
+                }
+            }
+        }     
       }
   })
